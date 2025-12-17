@@ -1,9 +1,19 @@
+local Framework = nil
+
 if Config.Framework == 'esx' then
-return require('infrastructure.esx.ESXFramework')
-elseif Config.Framework == 'qb' then
-return require('infrastructure.qb.QBFramework')
-elseif Config.Framework == 'custom' then
-return require('infrastructure.custom.CustomFramework')
+    if IsDuplicityVersion() then
+        Framework = require('infrastructure.esx.ESXServerAdapter')
+    else
+        Framework = require('infrastructure.esx.ESXClientAdapter')
+    end
+elseif Config.Framework == 'mock' then
+    if IsDuplicityVersion() then
+        Framework = require('infrastructure.mock.MockServerAdapter')
+    else
+        Framework = require('infrastructure.mock.MockClientAdapter')
+    end
+else
+    error('Unsupported framework: ' .. tostring(Config.Framework))
 end
 
-error('Unsupported framework')
+return Framework
